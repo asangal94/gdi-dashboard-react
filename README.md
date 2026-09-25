@@ -1,19 +1,18 @@
 # GDI Reporting Dashboard
 
-React/Vite dashboard redesigned to follow the supplied PowerPoint UI mockup.
+Refined React/Vite dashboard based on the approved PowerPoint layout.
 
-## Key design features
+## Latest refinements
 
-- Clean white and light-grey executive dashboard canvas
-- Four colour-coded KPI cards across the top
-- User-supplied KPI icon artwork
-- Inventory Progress on the left and Destruction Progress on the right
-- Project Progress Update on the lower left
-- SOC 2 Type II Status on the lower right
-- Fiscal-year history selector for F27, F26, F25, and F24
-- Dedicated SOC 2 and Updates detail views
-- Responsive layout and GitHub Pages deployment
+- Restored the earlier Reporting Dashboard title treatment.
+- Preserved the four approved KPI cards without changes.
+- Added smaller matching icons to Inventory, Destruction, Project Updates, and SOC 2 section headings.
+- Restored orange styling to Destruction Progress.
+- Used blue for Physical Inventory and purple for Electronic Inventory.
+- Improved the Fiscal Year dropdown styling.
+- Preserved the mockup card organization.
+- Removed excess left and right margins for a full-page dashboard.
 
 ## Publish
 
-Upload all files and folders to the repository root, including `.github` and `public`. Set **Settings > Pages > Source** to **GitHub Actions**. A push to `main` will build and publish the site.
+Upload all repository contents, including `.github` and `public`, to the repository root. Set **Settings > Pages > Source** to **GitHub Actions**.
