@@ -1,18 +1,13 @@
 # GDI Reporting Dashboard
 
-Refined React/Vite dashboard based on the approved PowerPoint layout.
+This update changes only the SOC 2 Type II Status area.
 
-## Latest refinements
+## SOC 2 changes
 
-- Restored the earlier Reporting Dashboard title treatment.
-- Preserved the four approved KPI cards without changes.
-- Added smaller matching icons to Inventory, Destruction, Project Updates, and SOC 2 section headings.
-- Restored orange styling to Destruction Progress.
-- Used blue for Physical Inventory and purple for Electronic Inventory.
-- Improved the Fiscal Year dropdown styling.
-- Preserved the mockup card organization.
-- Removed excess left and right margins for a full-page dashboard.
+- Slightly larger text in the six SOC 2 cards on the main dashboard.
+- Larger title-style field labels in the detailed SOC 2 view.
+- Detailed view includes Risk Rating sample data of 850 / 950.
+- Detailed view includes Progress sample data of 75% completed and a progress bar.
+- Detailed SOC 2 Report card includes Findings: 10 and Significant: 3.
 
-## Publish
-
-Upload all repository contents, including `.github` and `public`, to the repository root. Set **Settings > Pages > Source** to **GitHub Actions**.
+All other dashboard UI, icons, colours, and layout remain unchanged.
