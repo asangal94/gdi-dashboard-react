@@ -1,38 +1,23 @@
-# GDI Leadership Dashboard
+# GDI Reporting Dashboard
 
-A responsive React and Vite prototype for the Gaming Data Initiative leadership dashboard.
+GitHub Pages-ready React/Vite prototype for the Gaming Data Initiative reporting dashboard.
 
-## Included
+## Changes implemented
 
-- Four KPI cards ordered Project, EDRM, Inventory, and Destruction
-- Structured and Unstructured doughnut charts
-- Physical and Electronic horizontal progress bars
-- SOC 2 overview cards and detailed view
-- Latest-date-only bullet updates on Overview
-- Complete dated update history in the Updates view
-- Overview, SOC 2, and Updates navigation
-- Provider switching using illustrative data
-- Responsive desktop and mobile layouts
-- Visible error screen if React encounters a rendering problem
-- Automated GitHub Pages deployment
+1. Removed the focused dashboard banner.
+2. Changed Leadership Dashboard to Reporting Dashboard.
+3. Increased KPI card title font sizes.
+4. Removed Operational Progress and renamed Inventory Overview to Inventory Progress.
+5. Increased Structured and Unstructured doughnut sizes and allocated more width to them.
+6. Removed Complete below the inventory doughnuts.
+7. Removed Disposition and renamed Destruction Overview to Destruction Progress.
+8. Increased the destruction doughnut size and removed Complete.
+9. Added historical SOC 2 fiscal-year selection.
+10. Added F27, F26, F25, and F24 options.
+11. Renamed Next Fiscal Year Plan to Next Fiscal Year Scope.
+12. Enlarged Project Progress Updates for long narrative content.
+13. Added icons to KPI, section, navigation, and SOC 2 elements.
 
-## Publish with GitHub Pages
+## Publish
 
-1. Upload all repository files to GitHub.
-2. Open repository **Settings > Pages**.
-3. Set **Source** to **GitHub Actions**.
-4. Open the **Actions** tab and wait for `Deploy GDI Dashboard to GitHub Pages` to finish.
-5. Open the website URL shown by the completed deployment.
-
-Every push to the `main` branch automatically rebuilds and republishes the dashboard.
-
-## Optional local development
-
-```bash
-npm ci
-npm run dev
-```
-
-## Important
-
-The current data is illustrative. Do not add Dataverse secrets, passwords, access tokens, or confidential production records to the repository. GitHub Pages is for UI review. The production Entra ID and Dataverse version should be hosted in an organization-approved environment.
+Upload all files to the repository root. In GitHub, use **Settings > Pages > Source: GitHub Actions**. Every push to `main` rebuilds and publishes the site.

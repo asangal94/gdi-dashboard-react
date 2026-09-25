@@ -1,212 +1,49 @@
 import { useMemo, useState } from "react";
 import { providers } from "./data.js";
 
-const metricCards = [
-  { key: "project", label: "Project Progress", tone: "purple" },
-  { key: "edrm", label: "EDRM Progress", tone: "teal" },
-  { key: "inventory", label: "Inventory Progress", tone: "blue" },
-  { key: "destruction", label: "Destruction Progress", tone: "orange" }
+const metricCards=[
+  {key:"project",label:"Project Progress",tone:"purple",icon:"chart"},
+  {key:"edrm",label:"EDRM Progress",tone:"teal",icon:"layers"},
+  {key:"inventory",label:"Inventory Progress",tone:"blue",icon:"box"},
+  {key:"destruction",label:"Destruction Progress",tone:"orange",icon:"recycle"}
 ];
+const navItems=[{key:"overview",label:"Overview",icon:"grid"},{key:"soc2",label:"SOC 2",icon:"shield"},{key:"updates",label:"Updates",icon:"clock"}];
+const fiscalYears=["F27","F26","F25","F24"];
 
-const navItems = [
-  { key: "overview", label: "Overview", icon: "▦" },
-  { key: "soc2", label: "SOC 2", icon: "✓" },
-  { key: "updates", label: "Updates", icon: "●" }
-];
-
-function clamp(value) {
-  return Math.min(100, Math.max(0, Number(value) || 0));
-}
-
-function ProgressBar({ value, tone = "teal" }) {
-  const safeValue = clamp(value);
-  return (
-    <div className="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={safeValue}>
-      <span className={`fill ${tone}`} style={{ width: `${safeValue}%` }} />
-    </div>
-  );
-}
-
-function Donut({ value, tone = "blue", label }) {
-  const safeValue = clamp(value);
-  return (
-    <div className="donut-item">
-      <div className={`donut donut-${tone}`} style={{ "--value": safeValue }} role="img" aria-label={`${label}: ${safeValue}% complete`}>
-        <span>{safeValue}%</span>
-      </div>
-      <strong>{label}</strong>
-      <small>Complete</small>
-    </div>
-  );
-}
-
-function ProviderHeader({ provider, providerId, onProviderChange, title }) {
-  return (
-    <header className="topbar">
-      <div>
-        <p className="kicker">Gaming Data Initiative</p>
-        <h1>{title}</h1>
-        <p className="provider-name">{provider.name} <span>({provider.abbreviation})</span></p>
-      </div>
-      <label className="provider-select">
-        <span>Change Provider</span>
-        <select value={providerId} onChange={(event) => onProviderChange(event.target.value)}>
-          {providers.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-        </select>
-      </label>
-    </header>
-  );
-}
-
-function SocCards({ soc2, detailed = false }) {
-  const fields = [
-    ["Scope", soc2.scope],
-    ["Audit Period", soc2.auditPeriod],
-    ["SOC 2 Report", soc2.report],
-    ["Remediation Plan", soc2.remediationPlan],
-    ["Status Update", soc2.statusUpdate],
-    ["Next Fiscal Year Plan", soc2.nextFiscalYearPlan]
-  ];
-
-  return (
-    <div className={`soc-cards ${detailed ? "soc-cards-detailed" : ""}`}>
-      {fields.map(([label, value]) => (
-        <article key={label}>
-          <h3>{label}</h3>
-          <p>{value || "Not available"}</p>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function Overview({ provider, latestUpdates, onNavigate }) {
-  return (
-    <>
-      <section className="metrics-grid" aria-label="Key performance indicators">
-        {metricCards.map(({ key, label, tone }) => (
-          <article className="metric-card" key={key}>
-            <p>{label}</p>
-            <strong>{clamp(provider.metrics[key])}%</strong>
-            <ProgressBar value={provider.metrics[key]} tone={tone} />
-            <small>Current completion</small>
-          </article>
-        ))}
-      </section>
-
-      <section className="content-grid">
-        <article className="panel inventory-panel">
-          <div className="section-heading">
-            <div><p className="kicker">Operational progress</p><h2>Inventory Overview</h2></div>
-          </div>
-          <div className="inventory-body">
-            <div className="donut-group">
-              <h3>Structured and Unstructured Progress</h3>
-              <div className="donut-row">
-                <Donut value={provider.inventory.structured} tone="teal" label="Structured" />
-                <Donut value={provider.inventory.unstructured} tone="blue" label="Unstructured" />
-              </div>
-            </div>
-            <div className="breakdown">
-              <h3>Unstructured Data Inventory Breakdown</h3>
-              <div className="bar-row"><span>Physical</span><ProgressBar value={provider.inventory.physical} tone="teal" /><b>{clamp(provider.inventory.physical)}%</b></div>
-              <div className="bar-row"><span>Electronic</span><ProgressBar value={provider.inventory.electronic} tone="purple" /><b>{clamp(provider.inventory.electronic)}%</b></div>
-            </div>
-          </div>
-        </article>
-
-        <article className="panel destruction-panel">
-          <div className="section-heading"><div><p className="kicker">Disposition</p><h2>Destruction Overview</h2></div></div>
-          <Donut value={provider.destruction.overall} tone="orange" label="Overall" />
-          <div className="bar-row"><span>Structured</span><ProgressBar value={provider.destruction.structured} tone="red" /><b>{clamp(provider.destruction.structured)}%</b></div>
-          <div className="bar-row"><span>Unstructured</span><ProgressBar value={provider.destruction.unstructured} tone="orange" /><b>{clamp(provider.destruction.unstructured)}%</b></div>
-        </article>
-      </section>
-
-      <section className="bottom-grid">
-        <article className="panel soc-panel">
-          <div className="section-heading"><h2>SOC 2 Type II Status</h2><button type="button" onClick={() => onNavigate("soc2")}>View details</button></div>
-          <SocCards soc2={provider.soc2} />
-        </article>
-        <article className="panel updates-panel">
-          <div className="section-heading"><h2>Project Progress Updates</h2><button type="button" onClick={() => onNavigate("updates")}>View details</button></div>
-          <ul className="bullet-updates">
-            {latestUpdates.length ? latestUpdates.map((update, index) => <li key={`${update.date}-${index}`}>{update.text}</li>) : <li>No updates are available.</li>}
-          </ul>
-        </article>
-      </section>
-    </>
-  );
-}
-
-function SocDetail({ provider }) {
-  return (
-    <section className="detail-page">
-      <article className="panel detail-intro"><div className="detail-icon">✓</div><div><p className="kicker">Detailed assurance view</p><h2>SOC 2 Type II Status</h2><p>Review the current scope, audit period, report, remediation activity, status, and next fiscal year plan.</p></div></article>
-      <article className="panel"><SocCards soc2={provider.soc2} detailed /></article>
-    </section>
-  );
-}
-
-function UpdatesDetail({ provider }) {
-  const groupedUpdates = useMemo(() => {
-    return provider.updates.reduce((groups, update) => {
-      const nextGroups = groups;
-      if (!nextGroups[update.date]) nextGroups[update.date] = [];
-      nextGroups[update.date].push(update);
-      return nextGroups;
-    }, {});
-  }, [provider]);
-
-  return (
-    <section className="detail-page">
-      <article className="panel detail-intro"><div className="detail-icon">●</div><div><p className="kicker">Complete provider history</p><h2>Project Progress Updates</h2><p>Detailed updates are grouped by reporting date, newest first.</p></div></article>
-      {Object.entries(groupedUpdates).sort(([dateA], [dateB]) => dateB.localeCompare(dateA)).map(([date, updates]) => (
-        <article className="panel update-history" key={date}>
-          <time dateTime={date}>{new Date(`${date}T12:00:00`).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })}</time>
-          <ul>{updates.map((update, index) => <li key={`${date}-${index}`}>{update.text}</li>)}</ul>
-        </article>
-      ))}
-    </section>
-  );
-}
-
-export default function App() {
-  const [providerId, setProviderId] = useState(providers[0].id);
-  const [view, setView] = useState("overview");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const provider = providers.find((item) => item.id === providerId) || providers[0];
-
-  const latestUpdates = useMemo(() => {
-    if (!provider.updates.length) return [];
-    const latestDate = provider.updates.reduce((latest, update) => update.date > latest ? update.date : latest, provider.updates[0].date);
-    return provider.updates.filter((update) => update.date === latestDate);
-  }, [provider]);
-
-  const titles = { overview: "Leadership Dashboard", soc2: "SOC 2 Detailed View", updates: "Project Updates Detailed View" };
-  const navigate = (nextView) => {
-    setView(nextView);
-    setMobileNavOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+function Icon({name,size=22}){
+  const paths={
+    grid:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    shield:<><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-5"/></>,
+    clock:<><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    chart:<><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19H2"/></>,
+    layers:<><path d="M12 3L3 8l9 5 9-5-9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></>,
+    box:<><path d="M4 7l8-4 8 4-8 4-8-4z"/><path d="M4 7v10l8 4 8-4V7"/><path d="M12 11v10"/></>,
+    recycle:<><path d="M7 7l2-3 2 3"/><path d="M9 4h5a5 5 0 014 3"/><path d="M18 12l3 2-3 2"/><path d="M21 14a5 5 0 01-5 5h-2"/><path d="M9 20l-3-1 1-3"/><path d="M6 19a5 5 0 01-1-7"/></>,
+    inventory:<><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 2"/></>,
+    document:<><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></>,
+    calendar:<><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></>,
+    target:<><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M15 9l5-5"/></>,
+    check:<><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></>,
+    arrow:<><path d="M5 12h14M14 7l5 5-5 5"/></>
   };
-
-  return (
-    <div className="app-shell">
-      <button className="mobile-menu" type="button" onClick={() => setMobileNavOpen((open) => !open)} aria-label="Toggle navigation">{mobileNavOpen ? "×" : "☰"}</button>
-      <aside className={`sidebar ${mobileNavOpen ? "open" : ""}`}>
-        <div className="brand" aria-label="GDI">GDI</div>
-        <nav aria-label="Dashboard navigation">
-          {navItems.map((item) => <button type="button" key={item.key} className={view === item.key ? "active" : ""} onClick={() => navigate(item.key)}><span className="nav-icon">{item.icon}</span><span>{item.label}</span></button>)}
-        </nav>
-      </aside>
-      <main className="main-content">
-        <div className="focus-banner">Focused dashboard for one service provider at a time</div>
-        <ProviderHeader provider={provider} providerId={providerId} onProviderChange={setProviderId} title={titles[view]} />
-        {view === "overview" && <Overview provider={provider} latestUpdates={latestUpdates} onNavigate={navigate} />}
-        {view === "soc2" && <SocDetail provider={provider} />}
-        {view === "updates" && <UpdatesDetail provider={provider} />}
-        <footer>GDI Leadership Dashboard · Prototype data only · Production values will come from Dataverse</footer>
-      </main>
-    </div>
-  );
+  return <svg className="icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
+const clamp=v=>Math.min(100,Math.max(0,Number(v)||0));
+function ProgressBar({value,tone="teal"}){const n=clamp(value);return <div className="track" role="progressbar" aria-valuenow={n} aria-valuemin="0" aria-valuemax="100"><span className={`fill ${tone}`} style={{width:`${n}%`}}/></div>}
+function Donut({value,tone="blue",label,large=false}){const n=clamp(value);return <div className={`donut-item ${large?"large":""}`}><div className={`donut donut-${tone}`} style={{"--value":n}} aria-label={`${label}: ${n}%`}><span>{n}%</span></div><strong>{label}</strong></div>}
+function FiscalSelector({value,onChange}){return <label className="fiscal-selector"><span>Fiscal Year</span><select value={value} onChange={e=>onChange(e.target.value)}>{fiscalYears.map(y=><option key={y}>{y}</option>)}</select></label>}
+function ProviderHeader({provider,providerId,onProviderChange}){return <header className="topbar"><div><p className="kicker">Gaming Data Initiative</p><h1>Reporting Dashboard</h1><p className="provider-name">{provider.name} <span>({provider.abbreviation})</span></p></div><label className="provider-select"><span>Change Provider</span><select value={providerId} onChange={e=>onProviderChange(e.target.value)}>{providers.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></label></header>}
+const socFields=s=>[["Scope",s.scope,"target"],["Audit Period",s.auditPeriod,"calendar"],["SOC 2 Report",s.report,"document"],["Remediation Plan",s.remediationPlan,"check"],["Status Update",s.statusUpdate,"clock"],["Next Fiscal Year Scope",s.nextFiscalYearScope,"arrow"]];
+function SocCards({soc2,detailed=false}){return <div className={`soc-cards ${detailed?"soc-cards-detailed":""}`}>{socFields(soc2).map(([label,value,icon])=><article key={label}><div className="soc-card-title"><span className="icon-badge"><Icon name={icon} size={18}/></span><h3>{label}</h3></div><p>{value||"Not available"}</p></article>)}</div>}
+function Overview({provider,latestUpdates,fiscalYear,setFiscalYear,onNavigate}){const soc2=provider.soc2History[fiscalYear];return <>
+<section className="metrics-grid">{metricCards.map(m=><article className={`metric-card metric-${m.tone}`} key={m.key}><div className="metric-top"><p>{m.label}</p><span className={`metric-icon ${m.tone}`}><Icon name={m.icon}/></span></div><strong>{clamp(provider.metrics[m.key])}%</strong><ProgressBar value={provider.metrics[m.key]} tone={m.tone}/><small>Current completion</small></article>)}</section>
+<section className="content-grid">
+<article className="panel inventory-panel"><div className="section-heading"><div className="heading-with-icon"><span className="section-icon teal"><Icon name="inventory"/></span><h2>Inventory Progress</h2></div></div><div className="inventory-body"><div className="donut-group"><h3>Structured and Unstructured Progress</h3><div className="donut-row"><Donut value={provider.inventory.structured} tone="teal" label="Structured" large/><Donut value={provider.inventory.unstructured} tone="blue" label="Unstructured" large/></div></div><div className="breakdown"><h3>Unstructured Data Inventory Breakdown</h3><div className="bar-row"><span>Physical</span><ProgressBar value={provider.inventory.physical} tone="teal"/><b>{clamp(provider.inventory.physical)}%</b></div><div className="bar-row"><span>Electronic</span><ProgressBar value={provider.inventory.electronic} tone="purple"/><b>{clamp(provider.inventory.electronic)}%</b></div></div></div></article>
+<article className="panel destruction-panel"><div className="section-heading"><div className="heading-with-icon"><span className="section-icon orange"><Icon name="recycle"/></span><h2>Destruction Progress</h2></div></div><Donut value={provider.destruction.overall} tone="orange" label="Overall" large/><div className="bar-row"><span>Structured</span><ProgressBar value={provider.destruction.structured} tone="red"/><b>{clamp(provider.destruction.structured)}%</b></div><div className="bar-row"><span>Unstructured</span><ProgressBar value={provider.destruction.unstructured} tone="orange"/><b>{clamp(provider.destruction.unstructured)}%</b></div></article>
+</section>
+<section className="soc-overview panel"><div className="section-heading"><div className="heading-with-icon"><span className="section-icon blue"><Icon name="shield"/></span><h2>SOC 2 Type II Status</h2></div><div className="heading-actions"><FiscalSelector value={fiscalYear} onChange={setFiscalYear}/><button onClick={()=>onNavigate("soc2")}>View details <Icon name="arrow" size={16}/></button></div></div><SocCards soc2={soc2}/></section>
+<section className="panel updates-panel"><div className="section-heading"><div className="heading-with-icon"><span className="section-icon purple"><Icon name="clock"/></span><h2>Project Progress Updates</h2></div><button onClick={()=>onNavigate("updates")}>View history <Icon name="arrow" size={16}/></button></div><div className="updates-content"><ul>{latestUpdates.length?latestUpdates.map((u,i)=><li key={`${u.date}-${i}`}>{u.text}</li>):<li>No updates available.</li>}</ul></div></section>
+</>}
+function SocDetail({provider,fiscalYear,setFiscalYear}){const soc2=provider.soc2History[fiscalYear];return <section className="detail-page"><article className="panel detail-intro"><span className="detail-icon"><Icon name="shield" size={28}/></span><div><p className="kicker">Detailed assurance view</p><h2>SOC 2 Type II Status</h2><p>Review current and historical fiscal-year information.</p></div><FiscalSelector value={fiscalYear} onChange={setFiscalYear}/></article><article className="panel"><SocCards soc2={soc2} detailed/></article></section>}
+function UpdatesDetail({provider}){const groups=useMemo(()=>provider.updates.reduce((a,u)=>{(a[u.date]??=[]).push(u);return a},{}),[provider]);return <section className="detail-page"><article className="panel detail-intro"><span className="detail-icon purple"><Icon name="clock" size={28}/></span><div><p className="kicker">Complete provider history</p><h2>Project Progress Updates</h2><p>Detailed updates are grouped by reporting date, newest first.</p></div></article>{Object.entries(groups).sort(([a],[b])=>b.localeCompare(a)).map(([date,items])=><article className="panel update-history" key={date}><time>{new Date(`${date}T12:00:00`).toLocaleDateString("en-CA",{year:"numeric",month:"long",day:"numeric"})}</time><ul>{items.map((u,i)=><li key={i}>{u.text}</li>)}</ul></article>)}</section>}
+export default function App(){const[providerId,setProviderId]=useState(providers[0].id);const[view,setView]=useState("overview");const[fiscalYear,setFiscalYear]=useState("F27");const[mobile,setMobile]=useState(false);const provider=providers.find(p=>p.id===providerId)||providers[0];const latestUpdates=useMemo(()=>{if(!provider.updates.length)return[];const d=provider.updates.reduce((m,u)=>u.date>m?u.date:m,provider.updates[0].date);return provider.updates.filter(u=>u.date===d)},[provider]);const navigate=v=>{setView(v);setMobile(false);window.scrollTo({top:0,behavior:"smooth"})};return <div className="app-shell"><button className="mobile-menu" onClick={()=>setMobile(v=>!v)}>{mobile?"×":"☰"}</button><aside className={`sidebar ${mobile?"open":""}`}><div className="brand">GDI</div><nav>{navItems.map(n=><button key={n.key} className={view===n.key?"active":""} onClick={()=>navigate(n.key)}><Icon name={n.icon}/><span>{n.label}</span></button>)}</nav></aside><main className="main-content"><ProviderHeader provider={provider} providerId={providerId} onProviderChange={setProviderId}/>{view==="overview"&&<Overview provider={provider} latestUpdates={latestUpdates} fiscalYear={fiscalYear} setFiscalYear={setFiscalYear} onNavigate={navigate}/>} {view==="soc2"&&<SocDetail provider={provider} fiscalYear={fiscalYear} setFiscalYear={setFiscalYear}/>} {view==="updates"&&<UpdatesDetail provider={provider}/>}<footer>GDI Reporting Dashboard · Prototype data only · Production values will come from Dataverse</footer></main></div>}

@@ -3,17 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import "./styles.css";
-
-const rootElement = document.getElementById("root");
-
-if (!rootElement) {
-  throw new Error("The root element was not found in index.html.");
-}
-
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
-);
+const root=document.getElementById("root");
+if(!root) throw new Error("Root element not found.");
+ReactDOM.createRoot(root).render(<React.StrictMode><ErrorBoundary><App/></ErrorBoundary></React.StrictMode>);
